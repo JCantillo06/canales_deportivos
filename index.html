@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreamX Eventos Deportivos | Live Sports Hub</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/747/747965.png" type="image/png">
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Luxon for DateTime handling -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.4.4/luxon.min.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0a0d14;
+      --bg-secondary: #121722;
+      --bg-card: rgba(20, 26, 40, 0.85);
+      --bg-card-hover: rgba(28, 37, 56, 0.95);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(59, 130, 246, 0.5);
+      
+      --accent-blue: #3b82f6;
+      --accent-blue-glow: rgba(59, 130, 246, 0.35);
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-green-glow: rgba(16, 185, 129, 0.3);
+      --accent-red: #ef4444;
+      --accent-red-glow: rgba(239, 68, 68, 0.4);
+      --accent-amber: #f59e0b;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.12) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: rgba(10, 13, 20, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 1.5rem;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--accent-blue-glow);
+    }
+
+    .brand-icon i {
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    .brand-titles h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .brand-titles .tagline {
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Live Clock Badge */
+    .clock-badge {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+    }
+
+    .clock-badge i {
+      color: var(--accent-blue);
+    }
+
+    .clock-badge strong {
+      color: var(--text-main);
+      font-family: 'Outfit', monospace;
+    }
+
+    /* Player Mode Switcher */
+    .mode-switch {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+      box-shadow: 0 0 12px var(--accent-blue-glow);
+    }
+
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .refresh-btn:hover {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent-blue);
+    }
+
+    .refresh-btn i.rotating {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Embedded Video Player Panel */
+    .player-panel {
+      display: none;
+      background: #000;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+      position: relative;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .player-panel.active {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .player-header {
+      background: #111622;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .player-title-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-live-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-red);
+      animation: pulse 1.5s infinite;
+    }
+
+    .player-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+
+    .player-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .player-action-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .player-action-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .player-action-btn.btn-close {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .player-action-btn.btn-close:hover {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      background: #000;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Statistics & Summary Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .stat-info .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .stat-info .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .stat-icon.live {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+    }
+
+    .stat-icon.next {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent-blue);
+    }
+
+    .stat-icon.channels {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+    }
+
+    /* Filters and Search Bar */
+    .controls-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1.25rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .controls-top {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(15, 20, 32, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 16px 12px 44px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px var(--accent-blue-glow);
+    }
+
+    .status-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-tab {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .status-tab.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #fff;
+      box-shadow: 0 0 14px var(--accent-blue-glow);
+    }
+
+    .status-badge-count {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
+
+    /* Category Pill Badges */
+    .categories-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-subtle) transparent;
+    }
+
+    .cat-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cat-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .cat-pill.active {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 12px var(--accent-blue-glow);
+    }
+
+    /* Events Grid Container */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* Single Event Card */
+    .event-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .event-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: transparent;
+      transition: var(--transition);
+    }
+
+    .event-card.status-live::before {
+      background: linear-gradient(90deg, var(--accent-red), #f97316);
+    }
+
+    .event-card.status-pronto::before {
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+    }
+
+    .event-card.status-finalizado::before {
+      background: var(--text-dim);
+    }
+
+    .event-card:hover {
+      transform: translateY(-4px);
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .card-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-status-badge.live {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .card-status-badge.live .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .card-status-badge.next {
+      background: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    .card-status-badge.finished {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-dim);
+    }
+
+    .card-main-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .meta-time {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-amber);
+      font-weight: 600;
+    }
+
+    .flags-list {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .lang-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+    }
+
+    .flag-img {
+      width: 14px;
+      height: 10px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+
+    /* Feeds & Channels */
+    .feeds-section {
+      background: rgba(10, 14, 24, 0.6);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .feeds-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .channels-badges-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .channel-badge {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .channel-badge:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
+
+    /* Card Actions Buttons */
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-watch {
+      flex: 1;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: none;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-watch:hover {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary-action {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-secondary-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Empty & Loading state */
+    .loading-state, .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(59, 130, 246, 0.2);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s infinite linear;
+      margin: 0 auto 1.5rem;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid var(--border-focus);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+    }
+
+    #toast-notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    #toast-notification i {
+      color: var(--accent-green);
+    }
+
+    /* Footer */
+    footer {
+      background: #080a10;
+      border-top: 1px solid var(--border-subtle);
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-top: auto;
+    }
+
+    footer a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .header-controls {
+        justify-content: space-between;
+      }
+      .events-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-bar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-icon">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <div class="brand-titles">
+          <h1>StreamX Live Events</h1>
+          <div class="tagline"><i class="fa-solid fa-bolt"></i> Visualizador Deportivo en Tiempo Real</div>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="clock-badge">
+          <i class="fa-regular fa-clock"></i>
+          <span id="local-clock">--:--:--</span>
+          <strong id="local-timezone">GMT</strong>
+        </div>
+
+        <div class="mode-switch" title="Selecciona modo de reproducción">
+          <button class="mode-btn active" id="btn-mode-global1" onclick="setPlayerMode('global1.php')">
+            <i class="fa-solid fa-hand-pointer"></i> Manual
+          </button>
+          <button class="mode-btn" id="btn-mode-global2" onclick="setPlayerMode('global2.php')">
+            <i class="fa-solid fa-play"></i> Auto
+          </button>
+        </div>
+
+        <button class="refresh-btn" id="btn-refresh" onclick="fetchEventsManual()" title="Actualizar lista de eventos">
+          <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i>
+          <span>Actualizar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Embedded Video Player Panel -->
+    <section class="player-panel" id="embedded-player-panel">
+      <div class="player-header">
+        <div class="player-title-info">
+          <div class="player-live-dot"></div>
+          <div>
+            <div class="player-title" id="player-event-title">Reproduciendo evento</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);" id="player-channel-info">Canal: --</div>
+          </div>
+        </div>
+        <div class="player-actions">
+          <a href="#" id="player-external-link" target="_blank" class="player-action-btn" title="Abrir en pestaña nueva">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Pestaña nueva
+          </a>
+          <button class="player-action-btn" onclick="reloadPlayer()" title="Recargar reproductor">
+            <i class="fa-solid fa-rotate-right"></i> Recargar
+          </button>
+          <button class="player-action-btn btn-close" onclick="closePlayer()" title="Cerrar reproductor">
+            <i class="fa-solid fa-xmark"></i> Cerrar
+          </button>
+        </div>
+      </div>
+      <div class="video-wrapper">
+        <iframe id="video-frame" src="" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+      </div>
+    </section>
+
+    <!-- Statistics Overview -->
+    <section class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">En Vivo Ahora</div>
+          <div class="stat-value" id="stat-live-count">0</div>
+        </div>
+        <div class="stat-icon live">
+          <i class="fa-solid fa-tower-broadcast"></i>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Próximos Eventos</div>
+          <div class="stat-value" id="stat-next-count">0</div>
+        </div>
+        <div class="stat-icon next">
+          <i class="fa-regular fa-calendar-check"></i>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Canales / Feeds</div>
+          <div class="stat-value" id="stat-total-channels">0</div>
+        </div>
+        <div class="stat-icon channels">
+          <i class="fa-solid fa-tv"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search and Filters Bar -->
+    <section class="controls-bar">
+      <div class="controls-top">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-input" class="search-input" placeholder="Buscar por equipo, liga, deporte o canal (ej. Barcelona, ESPN, Roma)..." oninput="applyFilters()">
+        </div>
+
+        <div class="status-filters">
+          <button class="status-tab active" data-status="all" onclick="filterByStatus('all', this)">
+            <span>Todos</span>
+            <span class="status-badge-count" id="count-all">0</span>
+          </button>
+          <button class="status-tab" data-status="en vivo" onclick="filterByStatus('en vivo', this)">
+            <i class="fa-solid fa-circle" style="color: var(--accent-red); font-size: 0.6rem;"></i>
+            <span>En Vivo</span>
+            <span class="status-badge-count" id="count-live">0</span>
+          </button>
+          <button class="status-tab" data-status="pronto" onclick="filterByStatus('pronto', this)">
+            <i class="fa-regular fa-clock" style="color: var(--accent-blue); font-size: 0.75rem;"></i>
+            <span>Próximos</span>
+            <span class="status-badge-count" id="count-next">0</span>
+          </button>
+          <button class="status-tab" data-status="finalizado" onclick="filterByStatus('finalizado', this)">
+            <i class="fa-solid fa-flag-checkered" style="font-size: 0.75rem;"></i>
+            <span>Finalizados</span>
+            <span class="status-badge-count" id="count-finished">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories Pills Scroll -->
+      <div class="categories-scroll" id="categories-container">
+        <button class="cat-pill active" onclick="filterByCategory('Todos', this)">
+          <i class="fa-solid fa-globe"></i> Todos los deportes
+        </button>
+      </div>
+    </section>
+
+    <!-- Events Container -->
+    <section class="events-section" id="events-main-section">
+      <div class="loading-state" id="loading-indicator">
+        <div class="loading-spinner"></div>
+        <h3>Cargando eventos en tiempo real...</h3>
+        <p style="color: var(--text-muted); margin-top: 6px;">Conectando con la agenda...</p>
+      </div>
+      
+      <div id="events-grid-container" class="events-grid" style="display: none;"></div>
+      
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
+        <h3>No se encontraron eventos</h3>
+        <p style="color: var(--text-muted); margin-top: 6px;">Intenta cambiar los términos de búsqueda o los filtros seleccionados.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-message">Mensaje</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>StreamX Dashboard &bull; Sincronización en directo con <a href="https://streamx061.sbs/" target="_blank">streamx061.sbs</a></p>
+  </footer>
+
+  <script>
+    // Fallback Initial Agenda
+    const FALLBACK_AGENDA = [
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney1","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn3","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn4mx","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=universo","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=hyper1","title":"LaLiga 2: Burgos vs Real Sociedad II","time":"12:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=dsports2","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnplus1","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=mlaliga","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espndeportes","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=premier1uk","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney2","title":"Super Lig: Beşiktaş vs Çorum Belediyespor","time":"13:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn5","title":"Super Lig: Beşiktaş vs Çorum Belediyespor","time":"13:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fox2ar","title":"Super Lig: Beşiktaş vs Çorum Belediyespor","time":"13:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney3","title":"Super Lig: Amed SK vs Trabzonspor","time":"13:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney4","title":"Primera División: Racing vs Albion","time":"13:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney5","title":"Serie A: Atalanta vs Bologna","time":"13:45","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn3","title":"Serie A: Atalanta vs Bologna","time":"13:45","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn4mx","title":"Serie A: Atalanta vs Bologna","time":"13:45","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney6","title":"Premier League: Aston Villa vs Arsenal","time":"14:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=foxone1","title":"Premier League: Aston Villa vs Arsenal","time":"14:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=universo","title":"Premier League: Aston Villa vs Arsenal","time":"14:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=dsports","title":"Primeira Liga: Benfica vs Estoril","time":"14:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz3","title":"Primeira Liga: Benfica vs Estoril","time":"14:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=sporttv1pt","title":"Primeira Liga: Sporting Braga vs Vitória Guimarães","time":"14:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney7","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnplus2","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=daznlaliga","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espndeportes","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=premier1uk","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=hyper1","title":"LaLiga 2: Celta de Vigo II vs CD Castellon","time":"14:30","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz1","title":"Liga Profesional: Estudiantes LP vs Newell's Old Boys","time":"17:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntar","title":"Liga Profesional: Estudiantes LP vs Newell's Old Boys","time":"17:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz2","title":"Liga Profesional: Defensa y Justicia vs Platense","time":"17:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnpremium","title":"Liga Profesional: Defensa y Justicia vs Platense","time":"17:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntsportscl","title":"Primera División: Unión La Calera vs La Serena","time":"17:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz5","title":"Liga BetPlay: Deportivo Pasto vs Deportivo Pereira","time":"18:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=winplus","title":"Liga BetPlay: Deportivo Pasto vs Deportivo Pereira","time":"18:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz6","title":"Brasileirão: Remo vs Coritiba","time":"18:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=premiere1","title":"Brasileirão: Remo vs Coritiba","time":"18:00","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz7","title":"Liga Profesional: Instituto vs San Lorenzo","time":"19:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntar","title":"Liga Profesional: Instituto vs San Lorenzo","time":"19:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz8","title":"Liga Profesional: Tigre vs Barracas Central","time":"19:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnpremium","title":"Liga Profesional: Tigre vs Barracas Central","time":"19:15","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntsportscl","title":"Primera División: Universidad Católica vs O'Higgins","time":"19:45","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz9","title":"Liga BetPlay: Deportes Tolima vs Cúcuta Deportivo","time":"20:05","status":"En vivo","date":"2026-08-31"},
+      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=winplus","title":"Liga BetPlay: Deportes Tolima vs Cúcuta Deportivo","time":"20:05","status":"En vivo","date":"2026-08-31"}
+    ];
+
+    let rawEvents = [];
+    let processedGroupedEvents = [];
+    let currentSelectedCategory = 'Todos';
+    let currentSelectedStatus = 'all';
+    let currentSearchTerm = '';
+    let playerScriptMode = 'global1.php';
+    let activeStreamUrl = '';
+
+    const ENDPOINTS = [
+      '/api/agenda',
+      `${window.location.origin}/api/agenda`,
+      'http://localhost:3000/api/agenda',
+      'https://streamx061.sbs/json/agenda550.json'
+    ];
+
+    const LANGUAGE_CONFIG = {
+      es: { file: "es", text: "Español" },
+      us: { file: "us", text: "English" },
+      en: { file: "us", text: "English" },
+      pt: { file: "pt", text: "Português" },
+      de: { file: "de", text: "Alemán" },
+      fr: { file: "fr", text: "Francés" },
+      it: { file: "it", text: "Italiano" }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      startClock();
+      
+      // Load fallback immediately so screen is never blank
+      rawEvents = FALLBACK_AGENDA;
+      processEventsData();
+      buildCategoriesList();
+      renderEvents();
+
+      // Then fetch live updates
+      fetchEvents();
+
+      // Refresh every 60 seconds
+      setInterval(() => {
+        fetchEvents(false);
+      }, 60000);
+    });
+
+    function startClock() {
+      function update() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        document.getElementById('local-clock').textContent = timeStr;
+        document.getElementById('local-timezone').textContent = tzName.split('/').pop().replace('_', ' ');
+      }
+      update();
+      setInterval(update, 1000);
+    }
+
+    function setPlayerMode(mode) {
+      playerScriptMode = mode;
+      document.getElementById('btn-mode-global1').classList.toggle('active', mode === 'global1.php');
+      document.getElementById('btn-mode-global2').classList.toggle('active', mode === 'global2.php');
+      
+      showToast(`Modo: ${mode === 'global1.php' ? 'Manual (global1)' : 'Automático (global2)'}`);
+      renderEvents();
+
+      if (activeStreamUrl) {
+        const adjustedUrl = formatStreamUrl(activeStreamUrl);
+        document.getElementById('video-frame').src = adjustedUrl;
+        document.getElementById('player-external-link').href = adjustedUrl;
+      }
+    }
+
+    function formatStreamUrl(url) {
+      if (!url) return '';
+      let target = url;
+      if (target.includes('global1.php') || target.includes('global2.php')) {
+        target = target.replace(/global[12]\.php/, playerScriptMode);
+      }
+      return target;
+    }
+
+    async function fetchEvents(showFeedback = false) {
+      const refreshIcon = document.getElementById('refresh-icon');
+      if (refreshIcon) refreshIcon.classList.add('rotating');
+
+      let fetchedData = null;
+
+      for (const endpoint of ENDPOINTS) {
+        try {
+          const sep = endpoint.includes('?') ? '&' : '?';
+          const res = await fetch(`${endpoint}${sep}nocache=${Date.now()}`, { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+              fetchedData = data;
+              break;
+            }
+          }
+        } catch (err) {
+          // Try next
+        }
+      }
+
+      if (refreshIcon) refreshIcon.classList.remove('rotating');
+
+      if (fetchedData && Array.isArray(fetchedData) && fetchedData.length > 0) {
+        rawEvents = fetchedData;
+        processEventsData();
+        buildCategoriesList();
+        renderEvents();
+        if (showFeedback) showToast('✅ Agenda actualizada en directo');
+      } else {
+        if (showFeedback) showToast('ℹ️ Usando última agenda sincronizada');
+      }
+    }
+
+    function fetchEventsManual() {
+      fetchEvents(true);
+    }
+
+    function processEventsData() {
+      const now = luxon.DateTime.local();
+
+      const processed = rawEvents.map(evt => {
+        let eventDateTime;
+        if (evt.date && evt.time) {
+          const iso = `${evt.date}T${evt.time}`;
+          eventDateTime = luxon.DateTime.fromISO(iso, { zone: "America/Lima" }).toLocal();
+        } else {
+          eventDateTime = now;
+        }
+
+        const formattedTime = eventDateTime.toFormat("HH:mm");
+        const formattedDate = eventDateTime.toFormat("dd/MM/yyyy");
+        const timestamp = eventDateTime.toMillis();
+        const durationMin = evt.duration ? parseInt(evt.duration) : 120;
+        const minutesSinceStart = now.diff(eventDateTime, 'minutes').values.minutes;
+
+        let calculatedStatus = 'pronto';
+        if (minutesSinceStart >= 0 && minutesSinceStart <= durationMin) {
+          calculatedStatus = 'en vivo';
+        } else if (minutesSinceStart > durationMin) {
+          calculatedStatus = 'finalizado';
+        } else {
+          calculatedStatus = 'pronto';
+        }
+
+        let channelName = 'Canal';
+        try {
+          const urlObj = new URL(evt.link);
+          const chParam = urlObj.searchParams.get('channel');
+          if (chParam) {
+            channelName = chParam.toUpperCase();
+          } else {
+            const parts = evt.link.split('/');
+            channelName = parts[parts.length - 1] || 'Stream';
+          }
+        } catch (e) {
+          channelName = 'Feed';
+        }
+
+        return {
+          ...evt,
+          localTime: formattedTime,
+          localDate: formattedDate,
+          timestamp: timestamp,
+          calculatedStatus: calculatedStatus,
+          channelName: channelName,
+          diffMinutes: Math.round(now.diff(eventDateTime, 'minutes').values.minutes)
+        };
+      });
+
+      // Group feeds by event Title + Date
+      const groupedMap = new Map();
+
+      processed.forEach(item => {
+        if (!item.title) return;
+        const key = `${item.title.trim().toLowerCase()}_${item.date}`;
+        
+        if (!groupedMap.has(key)) {
+          groupedMap.set(key, {
+            title: item.title,
+            category: item.category || 'Deportes',
+            localTime: item.localTime,
+            localDate: item.localDate,
+            timestamp: item.timestamp,
+            calculatedStatus: item.calculatedStatus,
+            language: item.language,
+            feeds: []
+          });
+        }
+
+        const group = groupedMap.get(key);
+        if (item.calculatedStatus === 'en vivo') {
+          group.calculatedStatus = 'en vivo';
+        }
+        
+        if (!group.feeds.some(f => f.link === item.link)) {
+          group.feeds.push({
+            channelName: item.channelName,
+            link: item.link,
+            originalStatus: item.status
+          });
+        }
+      });
+
+      processedGroupedEvents = Array.from(groupedMap.values());
+
+      const order = { "en vivo": 0, "pronto": 1, "finalizado": 2 };
+      processedGroupedEvents.sort((a, b) => {
+        if (order[a.calculatedStatus] !== order[b.calculatedStatus]) {
+          return order[a.calculatedStatus] - order[b.calculatedStatus];
+        }
+        return a.timestamp - b.timestamp;
+      });
+
+      updateStatsAndCounters();
+    }
+
+    function updateStatsAndCounters() {
+      let liveCount = 0;
+      let nextCount = 0;
+      let finishedCount = 0;
+      let totalChannels = 0;
+
+      processedGroupedEvents.forEach(evt => {
+        totalChannels += evt.feeds.length;
+        if (evt.calculatedStatus === 'en vivo') liveCount++;
+        else if (evt.calculatedStatus === 'pronto') nextCount++;
+        else if (evt.calculatedStatus === 'finalizado') finishedCount++;
+      });
+
+      document.getElementById('stat-live-count').textContent = liveCount;
+      document.getElementById('stat-next-count').textContent = nextCount;
+      document.getElementById('stat-total-channels').textContent = totalChannels;
+
+      document.getElementById('count-all').textContent = processedGroupedEvents.length;
+      document.getElementById('count-live').textContent = liveCount;
+      document.getElementById('count-next').textContent = nextCount;
+      document.getElementById('count-finished').textContent = finishedCount;
+    }
+
+    function buildCategoriesList() {
+      const categoriesSet = new Set();
+      processedGroupedEvents.forEach(evt => {
+        if (evt.category) categoriesSet.add(evt.category.trim());
+      });
+
+      const container = document.getElementById('categories-container');
+      let html = `
+        <button class="cat-pill ${currentSelectedCategory === 'Todos' ? 'active' : ''}" onclick="filterByCategory('Todos', this)">
+          <i class="fa-solid fa-globe"></i> Todos los deportes
+        </button>
+      `;
+
+      categoriesSet.forEach(cat => {
+        let icon = 'fa-trophy';
+        const lower = cat.toLowerCase();
+        if (lower.includes('fútbol') || lower.includes('futbol')) icon = 'fa-futbol';
+        else if (lower.includes('basket') || lower.includes('baloncesto') || lower.includes('nba')) icon = 'fa-basketball';
+        else if (lower.includes('tenis') || lower.includes('tennis')) icon = 'fa-baseball';
+        else if (lower.includes('f1') || lower.includes('motor') || lower.includes('carrera')) icon = 'fa-flag-checkered';
+        else if (lower.includes('ufc') || lower.includes('boxeo') || lower.includes('mma')) icon = 'fa-hand-back-fist';
+
+        html += `
+          <button class="cat-pill ${currentSelectedCategory === cat ? 'active' : ''}" onclick="filterByCategory('${cat}', this)">
+            <i class="fa-solid ${icon}"></i> ${cat}
+          </button>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function filterByCategory(category, btnElement) {
+      currentSelectedCategory = category;
+      document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      renderEvents();
+    }
+
+    function filterByStatus(status, btnElement) {
+      currentSelectedStatus = status;
+      document.querySelectorAll('.status-tab').forEach(b => b.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      renderEvents();
+    }
+
+    function applyFilters() {
+      currentSearchTerm = document.getElementById('search-input').value.trim().toLowerCase();
+      renderEvents();
+    }
+
+    function renderEvents() {
+      const container = document.getElementById('events-grid-container');
+      const emptyState = document.getElementById('empty-state');
+      const loading = document.getElementById('loading-indicator');
+
+      if (loading) loading.style.display = 'none';
+
+      const filtered = processedGroupedEvents.filter(evt => {
+        if (currentSelectedStatus !== 'all' && evt.calculatedStatus !== currentSelectedStatus) {
+          return false;
+        }
+
+        if (currentSelectedCategory !== 'Todos' && evt.category !== currentSelectedCategory) {
+          return false;
+        }
+
+        if (currentSearchTerm) {
+          const matchTitle = evt.title.toLowerCase().includes(currentSearchTerm);
+          const matchCat = (evt.category || '').toLowerCase().includes(currentSearchTerm);
+          const matchFeeds = evt.feeds.some(f => f.channelName.toLowerCase().includes(currentSearchTerm));
+          if (!matchTitle && !matchCat && !matchFeeds) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      container.style.display = 'grid';
+
+      let cardsHtml = '';
+
+      filtered.forEach((evt, idx) => {
+        const isLive = evt.calculatedStatus === 'en vivo';
+        const isFinished = evt.calculatedStatus === 'finalizado';
+        
+        let statusBadgeHtml = '';
+        if (isLive) {
+          statusBadgeHtml = `<span class="card-status-badge live"><span class="pulse-dot"></span> EN VIVO</span>`;
+        } else if (isFinished) {
+          statusBadgeHtml = `<span class="card-status-badge finished"><i class="fa-solid fa-check-circle"></i> FINALIZADO</span>`;
+        } else {
+          statusBadgeHtml = `<span class="card-status-badge next"><i class="fa-regular fa-clock"></i> PRONTO</span>`;
+        }
+
+        let flagsHtml = '';
+        if (evt.language) {
+          const langs = Array.isArray(evt.language) ? evt.language : [evt.language];
+          langs.forEach(lang => {
+            const conf = LANGUAGE_CONFIG[lang] || { file: lang, text: lang.toUpperCase() };
+            flagsHtml += `
+              <span class="lang-chip">
+                <img src="https://flagcdn.com/${conf.file}.svg" alt="${conf.text}" class="flag-img" onerror="this.style.display='none'">
+                <span>${conf.text}</span>
+              </span>
+            `;
+          });
+        }
+
+        let channelsHtml = '';
+        const defaultFeed = evt.feeds[0] || { link: '#', channelName: 'Stream 1' };
+        const formattedDefaultLink = formatStreamUrl(defaultFeed.link);
+
+        evt.feeds.forEach((feed, fIdx) => {
+          channelsHtml += `
+            <button class="channel-badge" onclick="playStreamByIndex(${idx}, ${fIdx})">
+              <i class="fa-solid fa-play" style="font-size: 0.65rem;"></i> ${escapeHtml(feed.channelName)}
+            </button>
+          `;
+        });
+
+        cardsHtml += `
+          <div class="event-card status-${evt.calculatedStatus}">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div class="card-top">
+                <span class="card-category">
+                  <i class="fa-solid fa-tag"></i> ${escapeHtml(evt.category || 'Deportes')}
+                </span>
+                ${statusBadgeHtml}
+              </div>
+
+              <h2 class="card-main-title">${escapeHtml(evt.title)}</h2>
+
+              <div class="card-meta">
+                <div class="meta-time">
+                  <i class="fa-regular fa-clock"></i> ${evt.localTime} hrs
+                </div>
+                ${flagsHtml ? `<div class="flags-list">${flagsHtml}</div>` : ''}
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div class="feeds-section">
+                <div class="feeds-label">
+                  <span><i class="fa-solid fa-tv"></i> Canales Disponibles (${evt.feeds.length})</span>
+                  <span style="font-size: 0.65rem; color: var(--accent-cyan);">Click para ver</span>
+                </div>
+                <div class="channels-badges-group">
+                  ${channelsHtml}
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn-watch" onclick="playStreamByIndex(${idx}, 0)">
+                  <i class="fa-solid fa-play"></i> Ver Transmisión
+                </button>
+                
+                <a href="${escapeHtml(formattedDefaultLink)}" target="_blank" class="btn-secondary-action" title="Abrir en pestaña nueva">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+
+                <button class="btn-secondary-action" onclick="copyStreamLinkByIndex(${idx}, 0)" title="Copiar enlace">
+                  <i class="fa-regular fa-copy"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = cardsHtml;
+    }
+
+    function playStreamByIndex(evtIndex, feedIndex = 0) {
+      const evt = processedGroupedEvents[evtIndex];
+      if (!evt || !evt.feeds || !evt.feeds[feedIndex]) {
+        showToast('Enlace no disponible');
+        return;
+      }
+
+      const feed = evt.feeds[feedIndex];
+      activeStreamUrl = feed.link;
+      const formattedUrl = formatStreamUrl(feed.link);
+
+      const panel = document.getElementById('embedded-player-panel');
+      const iframe = document.getElementById('video-frame');
+      const titleElem = document.getElementById('player-event-title');
+      const channelElem = document.getElementById('player-channel-info');
+      const extLink = document.getElementById('player-external-link');
+
+      titleElem.textContent = evt.title || 'Evento en vivo';
+      channelElem.textContent = `Canal: ${feed.channelName} | Modo: ${playerScriptMode === 'global1.php' ? 'Manual' : 'Automático'}`;
+      extLink.href = formattedUrl;
+      iframe.src = formattedUrl;
+
+      panel.classList.add('active');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      showToast(`Reproduciendo: ${evt.title} (${feed.channelName})`);
+    }
+
+    function copyStreamLinkByIndex(evtIndex, feedIndex = 0) {
+      const evt = processedGroupedEvents[evtIndex];
+      if (!evt || !evt.feeds || !evt.feeds[feedIndex]) return;
+      const formattedUrl = formatStreamUrl(evt.feeds[feedIndex].link);
+      copyStreamLink(formattedUrl);
+    }
+
+    function reloadPlayer() {
+      const iframe = document.getElementById('video-frame');
+      if (iframe.src) {
+        const current = iframe.src;
+        iframe.src = '';
+        setTimeout(() => {
+          iframe.src = current;
+          showToast('Reproductor recargado');
+        }, 100);
+      }
+    }
+
+    function closePlayer() {
+      const panel = document.getElementById('embedded-player-panel');
+      const iframe = document.getElementById('video-frame');
+      iframe.src = '';
+      activeStreamUrl = '';
+      panel.classList.remove('active');
+    }
+
+    function copyStreamLink(url) {
+      if (!url) return;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('¡Enlace copiado al portapapeles!');
+      }).catch(() => {
+        const tmp = document.createElement('input');
+        tmp.value = url;
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        showToast('¡Enlace copiado!');
+      });
+    }
+
+    let toastTimeout;
+    function showToast(message) {
+      const toast = document.getElementById('toast-notification');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = message;
+      toast.classList.add('show');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function escapeHtml(string) {
+      if (!string) return '';
+      return String(string)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  </script>
+</body>
+</html>
