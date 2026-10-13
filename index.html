@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StreamX Eventos Deportivos | Live Sports Hub</title>
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/747/747965.png" type="image/png">
-  
+
   <!-- Google Fonts & Font Awesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
+
   <!-- Luxon for DateTime handling -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.4.4/luxon.min.js"></script>
 
@@ -23,7 +26,7 @@
       --bg-card-hover: rgba(28, 37, 56, 0.95);
       --border-subtle: rgba(255, 255, 255, 0.08);
       --border-focus: rgba(59, 130, 246, 0.5);
-      
+
       --accent-blue: #3b82f6;
       --accent-blue-glow: rgba(59, 130, 246, 0.35);
       --accent-cyan: #06b6d4;
@@ -32,11 +35,11 @@
       --accent-red: #ef4444;
       --accent-red-glow: rgba(239, 68, 68, 0.4);
       --accent-amber: #f59e0b;
-      
+
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
-      
+
       --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
@@ -52,7 +55,7 @@
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-primary);
-      background-image: 
+      background-image:
         radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
         radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
         radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.12) 0px, transparent 50%);
@@ -211,8 +214,13 @@
     }
 
     @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* Main Container */
@@ -244,8 +252,15 @@
     }
 
     @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .player-header {
@@ -318,7 +333,8 @@
 
     .video-wrapper {
       position: relative;
-      padding-bottom: 56.25%; /* 16:9 */
+      padding-bottom: 56.25%;
+      /* 16:9 */
       height: 0;
       background: #000;
     }
@@ -628,9 +644,20 @@
     }
 
     @keyframes pulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      }
+
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+      }
+
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
     }
 
     .card-status-badge.next {
@@ -792,7 +819,8 @@
     }
 
     /* Empty & Loading state */
-    .loading-state, .empty-state {
+    .loading-state,
+    .empty-state {
       text-align: center;
       padding: 4rem 2rem;
       background: var(--bg-card);
@@ -863,23 +891,200 @@
       text-decoration: none;
     }
 
+    /* Custom Stream URL Bar */
+    .custom-stream-bar {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem 1.25rem;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .custom-stream-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--accent-blue));
+    }
+
+    .custom-stream-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .custom-stream-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .custom-stream-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .custom-stream-input-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .custom-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .custom-input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-cyan);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .custom-stream-input {
+      width: 100%;
+      background: rgba(10, 14, 24, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 42px 12px 44px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .custom-stream-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
+    }
+
+    .btn-clear-input {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-muted);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: var(--transition);
+    }
+
+    .btn-clear-input:hover {
+      background: rgba(239, 68, 68, 0.4);
+      color: #fff;
+    }
+
+    .custom-stream-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-paste-stream {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-paste-stream:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-play-stream {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      border: none;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+      white-space: nowrap;
+    }
+
+    .btn-play-stream:hover {
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+    }
+
     @media (max-width: 768px) {
       .header-container {
         flex-direction: column;
         align-items: stretch;
       }
+
       .header-controls {
         justify-content: space-between;
       }
+
       .events-grid {
         grid-template-columns: 1fr;
       }
+
       .stats-bar {
         grid-template-columns: 1fr 1fr;
+      }
+
+      .custom-stream-input-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .custom-stream-actions {
+        width: 100%;
+      }
+
+      .btn-paste-stream,
+      .btn-play-stream {
+        flex: 1;
+        justify-content: center;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Header -->
@@ -933,7 +1138,8 @@
           </div>
         </div>
         <div class="player-actions">
-          <a href="#" id="player-external-link" target="_blank" class="player-action-btn" title="Abrir en pestaña nueva">
+          <a href="#" id="player-external-link" target="_blank" class="player-action-btn"
+            title="Abrir en pestaña nueva">
             <i class="fa-solid fa-arrow-up-right-from-square"></i> Pestaña nueva
           </a>
           <button class="player-action-btn" onclick="reloadPlayer()" title="Recargar reproductor">
@@ -946,6 +1152,46 @@
       </div>
       <div class="video-wrapper">
         <iframe id="video-frame" src="" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+      </div>
+    </section>
+
+    <!-- Custom Channel Direct Play Bar -->
+    <section class="custom-stream-bar">
+      <div class="custom-stream-inner">
+        <div class="custom-stream-header">
+          <div class="custom-stream-title">
+            <i class="fa-solid fa-circle-play" style="color: var(--accent-cyan);"></i>
+            <span>Reproducir Enlace Directo / Canal Personalizado</span>
+          </div>
+          <span class="custom-stream-hint">Ingresa URL (ej: https://streamx723.sbs/global1.php?channel=espn4) o solo el nombre del canal</span>
+        </div>
+        <div class="custom-stream-input-group">
+          <div class="custom-input-wrapper">
+            <i class="fa-solid fa-link custom-input-icon"></i>
+            <input 
+              type="text" 
+              id="custom-stream-input" 
+              class="custom-stream-input" 
+              placeholder="https://streamx723.sbs/global1.php?channel=espn4" 
+              autocomplete="off"
+              oninput="handleCustomInputChange()"
+              onkeydown="if(event.key === 'Enter') playCustomStream()"
+            >
+            <button class="btn-clear-input" id="btn-clear-stream" onclick="clearCustomStreamInput()" title="Borrar texto" style="display: none;">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="custom-stream-actions">
+            <button class="btn-paste-stream" onclick="pasteCustomStreamUrl()" title="Pegar desde el portapapeles">
+              <i class="fa-regular fa-paste"></i>
+              <span>Pegar</span>
+            </button>
+            <button class="btn-play-stream" onclick="playCustomStream()" title="Reproducir este canal">
+              <i class="fa-solid fa-play"></i>
+              <span>Reproducir</span>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -987,7 +1233,9 @@
       <div class="controls-top">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="search-input" class="search-input" placeholder="Buscar por equipo, liga, deporte o canal (ej. Barcelona, ESPN, Roma)..." oninput="applyFilters()">
+          <input type="text" id="search-input" class="search-input"
+            placeholder="Buscar por equipo, liga, deporte o canal (ej. Barcelona, ESPN, Roma)..."
+            oninput="applyFilters()">
         </div>
 
         <div class="status-filters">
@@ -1028,13 +1276,14 @@
         <h3>Cargando eventos en tiempo real...</h3>
         <p style="color: var(--text-muted); margin-top: 6px;">Conectando con la agenda...</p>
       </div>
-      
+
       <div id="events-grid-container" class="events-grid" style="display: none;"></div>
-      
+
       <div class="empty-state" id="empty-state" style="display: none;">
         <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
         <h3>No se encontraron eventos</h3>
-        <p style="color: var(--text-muted); margin-top: 6px;">Intenta cambiar los términos de búsqueda o los filtros seleccionados.</p>
+        <p style="color: var(--text-muted); margin-top: 6px;">Intenta cambiar los términos de búsqueda o los filtros
+          seleccionados.</p>
       </div>
     </section>
 
@@ -1048,59 +1297,60 @@
 
   <!-- Footer -->
   <footer>
-    <p>StreamX Dashboard &bull; Sincronización en directo con <a href="https://streamx061.sbs/" target="_blank">streamx061.sbs</a></p>
+    <p>StreamX Dashboard &bull; Sincronización en directo con <a href="https://streamx723.sbs/"
+        target="_blank">streamx723.sbs</a></p>
   </footer>
 
   <script>
     // Fallback Initial Agenda
     const FALLBACK_AGENDA = [
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney1","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn3","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn4mx","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=universo","title":"Serie A: Lecce vs Roma","time":"11:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=hyper1","title":"LaLiga 2: Burgos vs Real Sociedad II","time":"12:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=dsports2","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnplus1","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=mlaliga","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espndeportes","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=premier1uk","title":"LaLiga: Osasuna vs Getafe","time":"12:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney2","title":"Super Lig: Beşiktaş vs Çorum Belediyespor","time":"13:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn5","title":"Super Lig: Beşiktaş vs Çorum Belediyespor","time":"13:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fox2ar","title":"Super Lig: Beşiktaş vs Çorum Belediyespor","time":"13:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney3","title":"Super Lig: Amed SK vs Trabzonspor","time":"13:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney4","title":"Primera División: Racing vs Albion","time":"13:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney5","title":"Serie A: Atalanta vs Bologna","time":"13:45","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn3","title":"Serie A: Atalanta vs Bologna","time":"13:45","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn4mx","title":"Serie A: Atalanta vs Bologna","time":"13:45","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney6","title":"Premier League: Aston Villa vs Arsenal","time":"14:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=foxone1","title":"Premier League: Aston Villa vs Arsenal","time":"14:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=universo","title":"Premier League: Aston Villa vs Arsenal","time":"14:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=dsports","title":"Primeira Liga: Benfica vs Estoril","time":"14:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz3","title":"Primeira Liga: Benfica vs Estoril","time":"14:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=sporttv1pt","title":"Primeira Liga: Sporting Braga vs Vitória Guimarães","time":"14:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=disney7","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espn","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnplus2","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=daznlaliga","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espndeportes","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=premier1uk","title":"LaLiga: Barcelona vs Rayo Vallecano","time":"14:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=hyper1","title":"LaLiga 2: Celta de Vigo II vs CD Castellon","time":"14:30","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz1","title":"Liga Profesional: Estudiantes LP vs Newell's Old Boys","time":"17:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntar","title":"Liga Profesional: Estudiantes LP vs Newell's Old Boys","time":"17:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz2","title":"Liga Profesional: Defensa y Justicia vs Platense","time":"17:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnpremium","title":"Liga Profesional: Defensa y Justicia vs Platense","time":"17:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntsportscl","title":"Primera División: Unión La Calera vs La Serena","time":"17:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz5","title":"Liga BetPlay: Deportivo Pasto vs Deportivo Pereira","time":"18:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=winplus","title":"Liga BetPlay: Deportivo Pasto vs Deportivo Pereira","time":"18:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz6","title":"Brasileirão: Remo vs Coritiba","time":"18:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=premiere1","title":"Brasileirão: Remo vs Coritiba","time":"18:00","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz7","title":"Liga Profesional: Instituto vs San Lorenzo","time":"19:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntar","title":"Liga Profesional: Instituto vs San Lorenzo","time":"19:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz8","title":"Liga Profesional: Tigre vs Barracas Central","time":"19:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=espnpremium","title":"Liga Profesional: Tigre vs Barracas Central","time":"19:15","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=tntsportscl","title":"Primera División: Universidad Católica vs O'Higgins","time":"19:45","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=fanatiz9","title":"Liga BetPlay: Deportes Tolima vs Cúcuta Deportivo","time":"20:05","status":"En vivo","date":"2026-08-31"},
-      {"category":"Fútbol","link":"https://streamx061.sbs/global1.php?channel=winplus","title":"Liga BetPlay: Deportes Tolima vs Cúcuta Deportivo","time":"20:05","status":"En vivo","date":"2026-08-31"}
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=disney1", "title": "Serie A: Lecce vs Roma", "time": "11:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espn3", "title": "Serie A: Lecce vs Roma", "time": "11:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espn4mx", "title": "Serie A: Lecce vs Roma", "time": "11:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=universo", "title": "Serie A: Lecce vs Roma", "time": "11:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=hyper1", "title": "LaLiga 2: Burgos vs Real Sociedad II", "time": "12:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=dsports2", "title": "LaLiga: Osasuna vs Getafe", "time": "12:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espnplus1", "title": "LaLiga: Osasuna vs Getafe", "time": "12:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=mlaliga", "title": "LaLiga: Osasuna vs Getafe", "time": "12:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espndeportes", "title": "LaLiga: Osasuna vs Getafe", "time": "12:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=premier1uk", "title": "LaLiga: Osasuna vs Getafe", "time": "12:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=disney2", "title": "Super Lig: Beşiktaş vs Çorum Belediyespor", "time": "13:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espn5", "title": "Super Lig: Beşiktaş vs Çorum Belediyespor", "time": "13:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fox2ar", "title": "Super Lig: Beşiktaş vs Çorum Belediyespor", "time": "13:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=disney3", "title": "Super Lig: Amed SK vs Trabzonspor", "time": "13:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=disney4", "title": "Primera División: Racing vs Albion", "time": "13:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=disney5", "title": "Serie A: Atalanta vs Bologna", "time": "13:45", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espn3", "title": "Serie A: Atalanta vs Bologna", "time": "13:45", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espn4mx", "title": "Serie A: Atalanta vs Bologna", "time": "13:45", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=disney6", "title": "Premier League: Aston Villa vs Arsenal", "time": "14:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=foxone1", "title": "Premier League: Aston Villa vs Arsenal", "time": "14:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=universo", "title": "Premier League: Aston Villa vs Arsenal", "time": "14:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=dsports", "title": "Primeira Liga: Benfica vs Estoril", "time": "14:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz3", "title": "Primeira Liga: Benfica vs Estoril", "time": "14:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=sporttv1pt", "title": "Primeira Liga: Sporting Braga vs Vitória Guimarães", "time": "14:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=disney7", "title": "LaLiga: Barcelona vs Rayo Vallecano", "time": "14:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espn", "title": "LaLiga: Barcelona vs Rayo Vallecano", "time": "14:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espnplus2", "title": "LaLiga: Barcelona vs Rayo Vallecano", "time": "14:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=daznlaliga", "title": "LaLiga: Barcelona vs Rayo Vallecano", "time": "14:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espndeportes", "title": "LaLiga: Barcelona vs Rayo Vallecano", "time": "14:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=premier1uk", "title": "LaLiga: Barcelona vs Rayo Vallecano", "time": "14:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=hyper1", "title": "LaLiga 2: Celta de Vigo II vs CD Castellon", "time": "14:30", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz1", "title": "Liga Profesional: Estudiantes LP vs Newell's Old Boys", "time": "17:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=tntar", "title": "Liga Profesional: Estudiantes LP vs Newell's Old Boys", "time": "17:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz2", "title": "Liga Profesional: Defensa y Justicia vs Platense", "time": "17:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espnpremium", "title": "Liga Profesional: Defensa y Justicia vs Platense", "time": "17:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=tntsportscl", "title": "Primera División: Unión La Calera vs La Serena", "time": "17:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz5", "title": "Liga BetPlay: Deportivo Pasto vs Deportivo Pereira", "time": "18:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=winplus", "title": "Liga BetPlay: Deportivo Pasto vs Deportivo Pereira", "time": "18:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz6", "title": "Brasileirão: Remo vs Coritiba", "time": "18:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=premiere1", "title": "Brasileirão: Remo vs Coritiba", "time": "18:00", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz7", "title": "Liga Profesional: Instituto vs San Lorenzo", "time": "19:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=tntar", "title": "Liga Profesional: Instituto vs San Lorenzo", "time": "19:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz8", "title": "Liga Profesional: Tigre vs Barracas Central", "time": "19:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=espnpremium", "title": "Liga Profesional: Tigre vs Barracas Central", "time": "19:15", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=tntsportscl", "title": "Primera División: Universidad Católica vs O'Higgins", "time": "19:45", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=fanatiz9", "title": "Liga BetPlay: Deportes Tolima vs Cúcuta Deportivo", "time": "20:05", "status": "En vivo", "date": "2026-08-31" },
+      { "category": "Fútbol", "link": "https://streamx723.sbs/global1.php?channel=winplus", "title": "Liga BetPlay: Deportes Tolima vs Cúcuta Deportivo", "time": "20:05", "status": "En vivo", "date": "2026-08-31" }
     ];
 
     let rawEvents = [];
@@ -1115,7 +1365,7 @@
       '/api/agenda',
       `${window.location.origin}/api/agenda`,
       'http://localhost:3000/api/agenda',
-      'https://streamx061.sbs/json/agenda550.json'
+      'https://streamx723.sbs/json/agenda550.json'
     ];
 
     const LANGUAGE_CONFIG = {
@@ -1130,7 +1380,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       startClock();
-      
+
       // Load fallback immediately so screen is never blank
       rawEvents = FALLBACK_AGENDA;
       processEventsData();
@@ -1162,7 +1412,7 @@
       playerScriptMode = mode;
       document.getElementById('btn-mode-global1').classList.toggle('active', mode === 'global1.php');
       document.getElementById('btn-mode-global2').classList.toggle('active', mode === 'global2.php');
-      
+
       showToast(`Modo: ${mode === 'global1.php' ? 'Manual (global1)' : 'Automático (global2)'}`);
       renderEvents();
 
@@ -1176,6 +1426,8 @@
     function formatStreamUrl(url) {
       if (!url) return '';
       let target = url;
+      // Normalizar dominio a streamx723.sbs si viene de un dominio anterior
+      target = target.replace(/streamx[0-9]+\.sbs/g, 'streamx723.sbs');
       if (target.includes('global1.php') || target.includes('global2.php')) {
         target = target.replace(/global[12]\.php/, playerScriptMode);
       }
@@ -1279,7 +1531,7 @@
       processed.forEach(item => {
         if (!item.title) return;
         const key = `${item.title.trim().toLowerCase()}_${item.date}`;
-        
+
         if (!groupedMap.has(key)) {
           groupedMap.set(key, {
             title: item.title,
@@ -1297,7 +1549,7 @@
         if (item.calculatedStatus === 'en vivo') {
           group.calculatedStatus = 'en vivo';
         }
-        
+
         if (!group.feeds.some(f => f.link === item.link)) {
           group.feeds.push({
             channelName: item.channelName,
@@ -1436,7 +1688,7 @@
       filtered.forEach((evt, idx) => {
         const isLive = evt.calculatedStatus === 'en vivo';
         const isFinished = evt.calculatedStatus === 'finalizado';
-        
+
         let statusBadgeHtml = '';
         if (isLive) {
           statusBadgeHtml = `<span class="card-status-badge live"><span class="pulse-dot"></span> EN VIVO</span>`;
@@ -1607,6 +1859,94 @@
       }, 2500);
     }
 
+    function handleCustomInputChange() {
+      const input = document.getElementById('custom-stream-input');
+      const clearBtn = document.getElementById('btn-clear-stream');
+      if (input && clearBtn) {
+        clearBtn.style.display = input.value ? 'flex' : 'none';
+      }
+    }
+
+    function clearCustomStreamInput() {
+      const input = document.getElementById('custom-stream-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+        handleCustomInputChange();
+      }
+    }
+
+    async function pasteCustomStreamUrl() {
+      const input = document.getElementById('custom-stream-input');
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          input.value = text.trim();
+          handleCustomInputChange();
+          showToast('Enlace pegado');
+        }
+      } catch (err) {
+        if (input) input.focus();
+        showToast('Presiona Ctrl+V para pegar');
+      }
+    }
+
+    function playCustomStream() {
+      const input = document.getElementById('custom-stream-input');
+      let rawUrl = (input ? input.value : '').trim();
+
+      if (!rawUrl) {
+        showToast('⚠️ Ingresa una URL o nombre de canal');
+        if (input) input.focus();
+        return;
+      }
+
+      // Si el usuario escribe solo el nombre del canal (ej: "espn4", "disney1", "channel=espn4")
+      let targetUrl = rawUrl;
+      if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+        let channelName = targetUrl;
+        if (channelName.includes('channel=')) {
+          channelName = channelName.split('channel=')[1].split('&')[0];
+        }
+        targetUrl = `https://streamx723.sbs/${playerScriptMode}?channel=${encodeURIComponent(channelName)}`;
+      }
+
+      // Normalizar URL (dominio streamx305 y modo seleccionado)
+      const formattedUrl = formatStreamUrl(targetUrl);
+      activeStreamUrl = targetUrl;
+
+      // Extraer nombre de canal para la cabecera del reproductor
+      let channelDisplay = 'Personalizado';
+      try {
+        const urlObj = new URL(formattedUrl);
+        const ch = urlObj.searchParams.get('channel');
+        if (ch) {
+          channelDisplay = ch.toUpperCase();
+        } else {
+          const parts = urlObj.pathname.split('/');
+          channelDisplay = parts[parts.length - 1] || 'Stream';
+        }
+      } catch (e) {
+        channelDisplay = 'Canal';
+      }
+
+      const panel = document.getElementById('embedded-player-panel');
+      const iframe = document.getElementById('video-frame');
+      const titleElem = document.getElementById('player-event-title');
+      const channelElem = document.getElementById('player-channel-info');
+      const extLink = document.getElementById('player-external-link');
+
+      titleElem.textContent = `Transmisión: ${channelDisplay}`;
+      channelElem.textContent = `Canal: ${channelDisplay} | Modo: ${playerScriptMode === 'global1.php' ? 'Manual' : 'Automático'}`;
+      extLink.href = formattedUrl;
+      iframe.src = formattedUrl;
+
+      panel.classList.add('active');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      showToast(`▶️ Reproduciendo canal: ${channelDisplay}`);
+    }
+
     function escapeHtml(string) {
       if (!string) return '';
       return String(string)
@@ -1618,4 +1958,5 @@
     }
   </script>
 </body>
+
 </html>

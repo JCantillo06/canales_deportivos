@@ -5,7 +5,7 @@ const path = require('path');
 const { exec } = require('child_process');
 
 let PORT = 3000;
-const STREAMX_AGENDA_URL = 'https://streamx061.sbs/json/agenda550.json';
+const STREAMX_AGENDA_URL = 'https://streamx723.sbs/json/agenda550.json';
 
 let cachedAgenda = null;
 let lastFetchTime = 0;
@@ -17,7 +17,7 @@ function fetchRemoteJson(url) {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         'Accept': 'application/json, text/plain, */*',
-        'Referer': 'https://streamx061.sbs/'
+        'Referer': 'https://streamx723.sbs/'
       }
     }, (res) => {
       let data = '';
