@@ -2,9 +2,7 @@
   "name": "canales-deportivos",
   "version": "1.0.0",
   "description": "StreamX Eventos Deportivos - Visualizador en tiempo real",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
     "dev": "node server.js"
   },
   "keywords": ["streaming", "deportes", "futbol"],
