@@ -90,4 +90,4 @@ El script iniciará el servidor en Node.js y abrirá automáticamente tu navegad
 
 ## 📄 Licencia
 
-Este proyecto está disponible para uso personal y educativo.
+Este proyecto está disponible para uso personal y educativo
